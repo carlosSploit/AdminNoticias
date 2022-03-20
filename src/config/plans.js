@@ -1,17 +1,8 @@
 import axios from "axios";
-import { token,domain_api } from "./constans";
+import {gettoken} from './mithelworks'
+import { domain_api } from "./constans";
 
-export async function gettoken(){
-    if (!localStorage.getItem(token)){
-        const url = `${domain_api}/tokeniser/`;
-        const toke = await axios.get(url);
-        const result = toke.data.token;
-        localStorage.setItem(token,result) 
-        return result
-    }else{
-        return localStorage.getItem(token)
-    }
-}
+
 
 export async function getplains(){
     
