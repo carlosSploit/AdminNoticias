@@ -1,15 +1,20 @@
-import './App.css';
-import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
+import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import Admin from "./components/Admin/Admin";
-import React, { useState, useEffect } from 'react';
-import {getplains,addplains,updateplains,deleteplains, readplains} from './config/plans'
-import {gettoken} from './config/mithelworks'
-import {getpointsanalitic,getaperturevote} from './config/votacions'
+import React, { useState, useEffect } from "react";
+import {
+  getplains,
+  addplains,
+  updateplains,
+  deleteplains,
+  readplains,
+} from "./config/plans";
+import { gettoken } from "./config/mithelworks";
+import { getpointsanalitic, getaperturevote } from "./config/votacions";
 import Registro from "./components/Registro/Registro";
 
 function App() {
-  useEffect( async()=>{
-    const token = await getaperturevote()
+  useEffect(async () => {
+    const token = await getaperturevote();
     // ##################################### analitic a los participantes
     // const token = await getpointsanalitic()
     // ##################################### read a los participantes
@@ -31,7 +36,7 @@ function App() {
     //######################################## Eliminar al participante
     // const token = await deleteplains(15);
     console.log(token);
-  })
+  });
   return <Admin />;
 }
 
