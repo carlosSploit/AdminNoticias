@@ -16,9 +16,7 @@ export default function Registro() {
     };
 
     const token = await addplains(data);
-
     form.resetFields();
-
     console.log(token);
   };
 

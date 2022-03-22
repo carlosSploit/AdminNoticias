@@ -17,7 +17,7 @@ export async function getplains(){
 
 export async function readplains(id){
     const id_negocio = id
-    const url = `${domain_api}/partic/${id_negocio}`;
+    const url = `${domain_api}/partic/r/${id_negocio}`;
     const result = await axios.get(url,{
         headers:{
             Authorization: `Bearer ${await gettoken()}`

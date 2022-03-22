@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, message, Typography, Table, Button, Space } from "antd";
 import { getaperturevote, getpointsanalitic } from "../../config/votacions";
 import { deleteplains } from "../../config/plans";
+import ModelButton from "./model"
 
 export default function Registro() {
   const [data, setData] = useState();
@@ -84,7 +85,9 @@ export default function Registro() {
       key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button onClick={editarLugar(record.key)}>Editar</Button>
+          <ModelButton
+            datos = {record}
+          ></ModelButton>
           <Button
             onClick={() => {
               eliminarLugar(record);
