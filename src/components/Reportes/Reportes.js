@@ -1,151 +1,139 @@
-import React from "react";
-import {
-  Form,
-  message,
-  Typography,
-  Table,
-  Button,
-} from "antd";
+import React, { useState, useEffect } from "react";
+import { Form, message, Typography, Table, Button, Space } from "antd";
+import { getaperturevote, getpointsanalitic } from "../../config/votacions";
+import { deleteplains } from "../../config/plans";
 
 export default function Registro() {
+  const [data, setData] = useState();
+  const [fechaApertura, setFechaApertura] = useState({});
 
-  const key = 'updatable';
+  useEffect(() => {
+    (async () => {
+      const token = await getpointsanalitic();
+      //console.log(token);
+      const data2 = token.map((item) => {
+        return {
+          key: item.id_negocio,
+          id: item.id_negocio,
+          name: item.nombre,
+          category: item.descripccion,
+          score: item.puntaje,
+          porcent: item.promedio,
+        };
+      });
+      setData(data2);
+    })();
+  }, [data]);
+
+  useEffect(() => {
+    (async () => {
+      const time = await getaperturevote();
+      //console.log(time.code_time);
+      const anno = time.code_time.slice(0, 4);
+      const mes = time.code_time.slice(4, 6);
+      const dia = time.code_time.slice(6, 8);
+
+      const data = {
+        anno: anno,
+        mes: mes,
+        dia: dia,
+      };
+      //console.log(data);
+      setFechaApertura(data);
+    })();
+  }, []);
+
+  const key = "updatable";
 
   const { Title } = Typography;
 
-  const dataSource = [
-    {
-      key: '1',
-      url: '.jpg',
-      name: 'Empresa S.A.C',
-      category: 'Construcción',
-      score: 50,
-    },
-    {
-      key: '2',
-      url: '.jpg',
-      name: 'Umbrella S.A.C',
-      category: 'Construcción',
-      score: 11,
-    },
-    {
-      key: '3',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '4',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '5',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '6',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '7',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '8',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '9',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '10',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '11',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-    {
-      key: '12',
-      url: '.jpg',
-      name: 'Grifos S.A.C',
-      category: 'Construcción',
-      score: 19,
-    },
-  ];
-  
   const columns = [
+    { title: "id", dataIndex: "id", key: "id" },
     {
-      title: 'Logo',
-      dataIndex: 'url',
-      key: 'url',
+      title: "Nombre",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Nombre',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Descripción",
+      dataIndex: "category",
+      key: "category",
     },
     {
-      title: 'Descripción',
-      dataIndex: 'category',
-      key: 'category',
-    },
-    {
-      title: 'Puntaje',
-      dataIndex: 'score',
-      key: 'score',
+      title: "Puntaje",
+      dataIndex: "score",
+      key: "score",
       sorter: {
         compare: (a, b) => a.score - b.score,
         multiple: 1,
       },
-      render: text => <a>{text}</a>,
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: "Porcentaje",
+      dataIndex: "porcent",
+      key: "porcent",
+      sorter: {
+        compare: (a, b) => a.score - b.score,
+        multiple: 1,
+      },
+    },
+    {
+      title: "Acciones",
+      dataIndex: "action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Button onClick={editarLugar(record.key)}>Editar</Button>
+          <Button
+            onClick={() => {
+              eliminarLugar(record);
+            }}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
     },
   ];
 
-  function onChange(pagination, filters, sorter, extra) {
-    console.log('params', pagination, filters, sorter, extra);
+  function editarLugar(id) {}
+
+  async function eliminarLugar(id) {
+    //console.log(id);
+    const token = await deleteplains(id.id);
+    console.log(token);
   }
 
-  const openMessage = () => {
-    message.loading({ content: 'Cargando...', key, duration: 2 });
+  function onChange(pagination, filters, sorter, extra) {
+    console.log("params", pagination, filters, sorter, extra);
+  }
+
+  const openMessage = async () => {
+    console.log(data[0]);
+    message.loading({ content: "Cargando...", key, duration: 2 });
     setTimeout(() => {
-      message.success({ content: 'Empresa S.A.C.', key, duration: 7 });
+      message.success({
+        content: `Empresa GANADORA ${data[0].name}`,
+        key,
+        duration: 17,
+      });
     }, 1000);
   };
+
+  //console.log(fechaApertura);
 
   return (
     <Form>
       <Form.Item>
         <Title level={2}> Reportes de votaciones </Title>
         <Form.Item>
-          <Table dataSource={dataSource} columns={columns} onChange={onChange}/>
-          <Button onClick={openMessage}> Ganador de las votaciones 00/00/00 </Button>
+          <Table dataSource={data} columns={columns} onChange={onChange} />
+          <Button onClick={openMessage}>
+            {" "}
+            Ganador de las votaciones a la fecha: {fechaApertura.dia}/
+            {fechaApertura.mes}/{fechaApertura.anno}{" "}
+          </Button>
         </Form.Item>
       </Form.Item>
     </Form>
