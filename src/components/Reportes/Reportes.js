@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Form, message, Typography, Table, Button, Space } from "antd";
-import { getaperturevote, getpointsanalitic } from "../../config/votacions";
+import { Form, message, Typography, Table, Button, Space, Row, Col } from "antd";
+import { getaperturtime, getpointsanalitic, getaperturevotacion } from "../../config/votacions";
 import { deleteplains } from "../../config/plans";
 import ModelButton from "./model"
+import Bottonreload from "./recarga" 
+import { PoweroffOutlined } from "@ant-design/icons";
+
 
 export default function Registro() {
   const [data, setData] = useState();
@@ -28,7 +31,7 @@ export default function Registro() {
 
   useEffect(() => {
     (async () => {
-      const time = await getaperturevote();
+      const time = await getaperturtime();
       //console.log(time.code_time);
       const anno = time.code_time.slice(0, 4);
       const mes = time.code_time.slice(4, 6);
@@ -42,7 +45,7 @@ export default function Registro() {
       //console.log(data);
       setFechaApertura(data);
     })();
-  }, []);
+  }, [fechaApertura]);
 
   const key = "updatable";
 
@@ -129,7 +132,16 @@ export default function Registro() {
   return (
     <Form>
       <Form.Item>
-        <Title level={2}> Reportes de votaciones </Title>
+        <Row justify="space-between">
+          <Col>
+              <Title level={2}> Reportes de votaciones </Title>
+          </Col>
+          <Col>
+            <Bottonreload click = { async ()=>{
+              return await getaperturevotacion()
+            }}/>
+          </Col>
+        </Row>
         <Form.Item>
           <Table dataSource={data} columns={columns} onChange={onChange} />
           <Button onClick={openMessage}>

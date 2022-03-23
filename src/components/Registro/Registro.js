@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, message, Button, Space } from "antd";
 // import { uploadFile } from "../../service/uploadFile";
 import { addplains } from "../../config/plans";
+import {uploudImage} from "../../config/uploud_img"
 
 export default function Registro() {
   const [form] = Form.useForm();
+  const [urlimageload, seturlimageload] = useState();
 
   const onFinish = async (evt) => {
     message.success("Registro Exitoso!");
@@ -12,7 +14,7 @@ export default function Registro() {
     const data = {
       nombre: evt.nameLocal,
       descripccion: evt.description,
-      url: evt.url,
+      url: urlimageload,
     };
 
     const token = await addplains(data);
@@ -24,10 +26,13 @@ export default function Registro() {
     message.error("Submit failed!");
   };
 
-  const generarURL = (evt) => {
+  const generarURL = async (evt) => {
     // console.log("Pruebas");
-    // let file = evt.target.files[0];
-    // console.log(file.name);
+    let file = evt.target.files[0];
+    console.log(file.name);
+    const contador = await uploudImage(file);
+    seturlimageload(contador.url)
+    console.log(contador)
     // uploadFile(file);
   };
 

@@ -2,25 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, message, Button, Space,Modal,Image } from "antd";
 import {readplains, updateplains} from '../../config/plans'
 import { UploadOutlined } from '@ant-design/icons';
+import {uploudImage} from "../../config/uploud_img"
 
 export default function Model(props){
     const [form] = Form.useForm();
     const {datos} = props;
+
     const [datup , setdatup] = useState({
         id_negocio : 0,
         nombre: "",
         descripccion : "",
         puntaje: 0,
-        url: "http://usuario.com",
+        url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
         stado: 0
     })
-    const [imageload, setImageload] = useState("https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png")
+    const genericimage = "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+    const [imageload, setImageload] = useState(genericimage)
     const [statemodel, setmodel] = useState();
 
     useEffect(() => {
         (async () => {
-          const token = await readplains(datos.id);
+          let token = await readplains(datos.id);
+          if (genericimage === imageload && token.url.indexOf("gftp") !== -1) setImageload(token.url)
           setdatup(token)
+          //setImageload(token.url)
         })();
     }, [datup]);
 
@@ -38,26 +43,20 @@ export default function Model(props){
         const data = {
           nombre: evt.nameLocal,
           descripccion: evt.description,
-          url: "htttp://Generico.com/",
+          url: imageload,
         };
-    
         const token = await updateplains(datup.id_negocio,data);
         form.resetFields();
         console.log(token);
     };
 
-    const generarURL = (evt) => {
+    const generarurl = async (evt) =>  {
         // console.log("Pruebas");
         let file = evt.target.files[0];
         console.log(file);
-        loadimageview(file);
-        // uploadFile(file);
+        const tuUrl = await uploudImage(file);
+        setImageload(tuUrl.url);
     };
-
-    const loadimageview = (file)=>{
-        console.log(file.name);
-        setImageload(URL.createObjectURL(file))
-    }
 
     return (
         <>
@@ -140,7 +139,7 @@ export default function Model(props){
                     label="URL"
                     rules={[{ required: false, message: "Por favor, Ingrese una URL!" }]}
                 >
-                    <Input id={`loadimage${datos.id}`} type="file" onChange={generarURL} />
+                    <Input id={`loadimage${datos.id}`} type="file" onChange={generarurl} />
                 </Form.Item>
 
                 <Form.Item>
