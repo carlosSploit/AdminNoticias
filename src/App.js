@@ -10,7 +10,7 @@ import {
   readplains,
 } from "./config/plans";
 import { gettoken } from "./config/mithelworks";
-import { getpointsanalitic, getaperturevote } from "./config/votacions";
+import { getpointsanalitic, getaperturtime } from "./config/votacions";
 
 function App() {
   // useEffect((async()=>{
