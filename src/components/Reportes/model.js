@@ -23,7 +23,7 @@ export default function Model(props){
     useEffect(() => {
         (async () => {
           let token = await readplains(datos.id);
-          if (genericimage === imageload && token.url.indexOf("gftp") !== -1) setImageload(token.url)
+          if (genericimage === imageload && token.url.indexOf("cloudinary") !== -1) setImageload(token.url)
           setdatup(token)
           //setImageload(token.url)
         })();
@@ -50,12 +50,20 @@ export default function Model(props){
         console.log(token);
     };
 
+    /*
+  {"messege":"imagen insertada correctamente",
+  "data":[{
+    "url":"http://res.cloudinary.com/noticiaslacana/image/upload/v1648146164/Images/y3rc4cpkas44g1kvrssh.jpg"
+    ,"id":"Images/y3rc4cpkas44g1kvrssh"}
+  ]}
+  */
+
     const generarurl = async (evt) =>  {
         // console.log("Pruebas");
         let file = evt.target.files[0];
         console.log(file);
         const tuUrl = await uploudImage(file);
-        setImageload(tuUrl.url);
+        setImageload(tuUrl.data[0].url);
     };
 
     return (

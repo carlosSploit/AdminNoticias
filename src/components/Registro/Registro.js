@@ -26,12 +26,20 @@ export default function Registro() {
     message.error("Submit failed!");
   };
 
+  /*
+  {"messege":"imagen insertada correctamente",
+  "data":[{
+    "url":"http://res.cloudinary.com/noticiaslacana/image/upload/v1648146164/Images/y3rc4cpkas44g1kvrssh.jpg"
+    ,"id":"Images/y3rc4cpkas44g1kvrssh"}
+  ]}
+  */
+
   const generarURL = async (evt) => {
     // console.log("Pruebas");
     let file = evt.target.files[0];
     console.log(file.name);
     const contador = await uploudImage(file);
-    seturlimageload(contador.url)
+    seturlimageload(contador.data[0].url)
     console.log(contador)
     // uploadFile(file);
   };

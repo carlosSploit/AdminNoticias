@@ -8,24 +8,28 @@ import { PoweroffOutlined } from "@ant-design/icons";
 
 
 export default function Registro() {
-  const [data, setData] = useState();
+  const [historydata, sethistorydata] = useState([]);
+  const [data, setData] = useState([]);
   const [fechaApertura, setFechaApertura] = useState({});
 
   useEffect(() => {
     (async () => {
-      const token = await getpointsanalitic();
-      //console.log(token);
-      const data2 = token.map((item) => {
-        return {
-          key: item.id_negocio,
-          id: item.id_negocio,
-          name: item.nombre,
-          category: item.descripccion,
-          score: item.puntaje,
-          porcent: item.promedio,
-        };
-      });
-      setData(data2);
+      if (data !== historydata || data.length === 0){
+        const token = await getpointsanalitic();
+        //console.log(token);
+        const data2 = token.map((item) => {
+          return {
+            key: item.id_negocio,
+            id: item.id_negocio,
+            name: item.nombre,
+            category: item.descripccion,
+            score: item.puntaje,
+            porcent: item.promedio,
+          };
+        });
+        setData(data2);
+        sethistorydata(data2);
+      }
     })();
   }, [data]);
 
