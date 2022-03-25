@@ -1,7 +1,10 @@
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "./Assets/css/correct_andd.css"
+import { Layout, Menu, Breadcrumb } from "antd";
 import Admin from "./components/Admin/Admin";
+import Login from "./components/Admin/login";
 import React, { useState, useEffect } from "react";
+import { token } from "./config/constans";
 import {
   getplains,
   addplains,
@@ -13,42 +16,21 @@ import { gettoken } from "./config/mithelworks";
 import { getpointsanalitic, getaperturtime } from "./config/votacions";
 
 function App() {
-  // useEffect((async()=>{
-  //   const token = gettoken();
-  // })(),[])
-  // useEffect(async () => {
-  //   //const token = await getaperturevote();
-  //   // ##################################### analitic a los participantes
-  //   // const token = await getpointsanalitic()
-  //   // ##################################### read a los participantes
-  //   // const token = await readplains()
-  //   // ##################################### listar a los participantes
-  //   // const token = await getplains()
-  //   // ##################################### insertar a un participante
-  //   // const token = await addplains({
-  //   //     "nombre": "hjshfkjdshfjksdhfksd",
-  //   //     "descripccion": "fsdhfjksdhfjksdhf",
-  //   //     "url": "dfhsdjhfkjsdhfksd"
-  //   // });
-  //   //######################################## actualizar al participante
-  //   // const token = await updateplains(15,{
-  //   //     "nombre": "Emprsa el mercadona",
-  //   //     "descripccion": "Empresa de venta de verduras y productos",
-  //   //     "url": "http://imagengenerica.com"
-  //   // });
-  //   //######################################## Eliminar al participante
-  //   // const token = await deleteplains(15);
-  //   //console.log(token);
-  // });
+  const [tokenexist, gettokenexit] = useState()
 
   useEffect(() => {
     (async () => {
-      const token = await gettoken();
+      gettokenexit(localStorage.getItem(token))
+      console.log(tokenexist)
       //console.log(token);
     })();
-  }, []);
+  }, [tokenexist]);
 
-  return <Admin />;
+  const checketkey = () =>{
+    gettokenexit(localStorage.getItem(token));
+  }
+
+  return (tokenexist)?<Admin/>:<Login callback = {checketkey}/>;
 }
 
 export default App;

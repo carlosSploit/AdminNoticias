@@ -38,6 +38,17 @@ export async function addplains(jsondat = {}){
     return result.data
 }
 
+export async function loggin(jsondat = {}){
+    const data = jsondat
+    const url = `${domain_api}/user/log`;
+    const result = await axios.post(url,data,{
+        headers:{
+            "Content-Type": "application/json;charset=UTF-8"
+        }
+    });
+    return result.data
+}
+
 export async function updateplains(id,jsondat = {}){
     const id_negocio = id
     const data = jsondat
