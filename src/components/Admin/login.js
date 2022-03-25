@@ -80,7 +80,7 @@ export default function Admin(props) {
             </Form.Item>
             <Form.Item>
                 {
-                    (erroclick != 3)?
+                    (erroclick !== 3)?
                     <div style={{display: "flex", alignItems: "center", justifyContent:"center"}}>Preciona para iniciar</div>
                     :
                     <div style={{display: "flex", alignItems: "center", justifyContent:"center", color:"#f44336"}}>Oportunidades culminadas</div>
