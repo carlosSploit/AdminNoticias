@@ -6,7 +6,7 @@ import {uploudImage} from "../../config/uploud_img"
 
 export default function Model(props){
     const [form] = Form.useForm();
-    const {datos} = props;
+    const {datos,callback} = props;
 
     const [datup , setdatup] = useState({
         id_negocio : 0,
@@ -18,6 +18,7 @@ export default function Model(props){
     })
     const genericimage = "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
     const [imageload, setImageload] = useState(genericimage)
+    const [fileimage, setfileimage] = useState(genericimage)
     const [statemodel, setmodel] = useState();
 
     useEffect(() => {
@@ -27,7 +28,7 @@ export default function Model(props){
           setdatup(token)
           //setImageload(token.url)
         })();
-    }, [datup]);
+    }, []);
 
     const cancel_update = ()=>{
         form.resetFields();
@@ -40,14 +41,24 @@ export default function Model(props){
 
     const onFinish = async (evt) => {
         message.success("Registro Exitoso!");
+
+        let url = "";
+
+        if (fileimage["name"] !== undefined){
+            console.log("se intenta actualizar una imagen")
+            const tuUrl = await uploudImage(fileimage);
+            url = tuUrl.data[0].url
+        }
+
         const data = {
           nombre: evt.nameLocal,
           descripccion: evt.description,
-          url: imageload,
+          url: (url === "")? datup.url : url,
         };
         const token = await updateplains(datup.id_negocio,data);
         form.resetFields();
         console.log(token);
+        callback();
     };
 
     /*
@@ -62,8 +73,8 @@ export default function Model(props){
         // console.log("Pruebas");
         let file = evt.target.files[0];
         console.log(file);
-        const tuUrl = await uploudImage(file);
-        setImageload(tuUrl.data[0].url);
+        setImageload(URL.createObjectURL(file));
+        setfileimage(file)
     };
 
     return (
@@ -147,7 +158,7 @@ export default function Model(props){
                     label="URL"
                     rules={[{ required: false, message: "Por favor, Ingrese una URL!" }]}
                 >
-                    <Input id={`loadimage${datos.id}`} type="file" onChange={generarurl} />
+                    <Input id={`loadimage${datos.id}`} type="file" onChange={generarurl}  accept="image/png, .jpeg, .jpg, image/gif" />
                 </Form.Item>
 
                 <Form.Item>

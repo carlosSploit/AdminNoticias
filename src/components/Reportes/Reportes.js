@@ -13,47 +13,47 @@ export default function Registro() {
   const [fechaApertura, setFechaApertura] = useState({});
 
   useEffect(() => {
-    (async () => {
-      if (data !== historydata || data.length === 0){
-        const token = await getpointsanalitic();
-        //console.log(token);
-        const data2 = token.map((item) => {
-          return {
-            key: item.id_negocio,
-            id: item.id_negocio,
-            name: item.nombre,
-            category: item.descripccion,
-            score: item.puntaje,
-            porcent: item.promedio,
-          };
-        });
-        setData(data2);
-        sethistorydata(data2);
-      }
-    })();
-  }, [data]);
+    (actualizarTabla)();
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      const time = await getaperturtime();
-      //console.log(time.code_time);
-      const anno = time.code_time.slice(0, 4);
-      const mes = time.code_time.slice(4, 6);
-      const dia = time.code_time.slice(6, 8);
-
-      const data = {
-        anno: anno,
-        mes: mes,
-        dia: dia,
-      };
-      //console.log(data);
-      setFechaApertura(data);
-    })();
-  }, [fechaApertura]);
+    (actualizartime)();
+  }, []);
 
   const key = "updatable";
 
   const { Title } = Typography;
+
+  const actualizarTabla = async () => {
+      const token = await getpointsanalitic();
+      const data2 = token.map((item) => {
+        return {
+          key: item.id_negocio,
+          id: item.id_negocio,
+          name: item.nombre,
+          category: item.descripccion,
+          score: item.puntaje,
+          porcent: item.promedio,
+        };
+      });
+      setData(data2);
+  }
+
+  const actualizartime = async () => {
+    const time = await getaperturtime();
+    //console.log(time.code_time);
+    const anno = time.code_time.slice(0, 4);
+    const mes = time.code_time.slice(4, 6);
+    const dia = time.code_time.slice(6, 8);
+
+    const data = {
+      anno: anno,
+      mes: mes,
+      dia: dia,
+    };
+    //console.log(data);
+    setFechaApertura(data);
+  }
 
   const columns = [
     { title: "id", dataIndex: "id", key: "id" },
@@ -94,6 +94,7 @@ export default function Registro() {
         <Space size="middle">
           <ModelButton
             datos = {record}
+            callback = {actualizarTabla}
           ></ModelButton>
           <Button
             onClick={() => {
@@ -107,11 +108,10 @@ export default function Registro() {
     },
   ];
 
-  function editarLugar(id) {}
-
   async function eliminarLugar(id) {
     //console.log(id);
     const token = await deleteplains(id.id);
+    await actualizarTabla();
     console.log(token);
   }
 
@@ -142,8 +142,8 @@ export default function Registro() {
           </Col>
           <Col>
             <Bottonreload click = { async ()=>{
-              return await getaperturevotacion()
-            }}/>
+                return await getaperturevotacion()
+            }} callback = {actualizartime}/>
           </Col>
         </Row>
         <Form.Item>

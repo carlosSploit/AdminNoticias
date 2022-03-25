@@ -6,20 +6,32 @@ import {uploudImage} from "../../config/uploud_img"
 
 export default function Registro() {
   const [form] = Form.useForm();
-  const [urlimageload, seturlimageload] = useState();
+  //const [urlimageload, seturlimageload] = useState(); // url de la pagina 
+  const [fieimage, setfieimage] = useState();
 
   const onFinish = async (evt) => {
     message.success("Registro Exitoso!");
     //console.log(evt);
+    console.log(fieimage)
+    if (!(fieimage["name"] !== undefined)){
+      console.log("no presenta una imagen")
+      return ;
+    }
+
+    const contador = await uploudImage(fieimage);
+    let urlname = contador.data[0].url;
+    console.log(`url image : ${urlname}`)
+    
     const data = {
       nombre: evt.nameLocal,
       descripccion: evt.description,
-      url: urlimageload,
+      url: urlname,
     };
 
     const token = await addplains(data);
     form.resetFields();
     console.log(token);
+    
   };
 
   const onFinishFailed = () => {
@@ -37,10 +49,12 @@ export default function Registro() {
   const generarURL = async (evt) => {
     // console.log("Pruebas");
     let file = evt.target.files[0];
-    console.log(file.name);
-    const contador = await uploudImage(file);
-    seturlimageload(contador.data[0].url)
-    console.log(contador)
+    //console.log(file.name);
+    // const contador = await uploudImage(file);
+    // const url = contador.data[0].url;
+    //seturlimageload(URL.createObjectURL(file))
+    setfieimage(file)
+    console.log(file)
     // uploadFile(file);
   };
 
@@ -75,7 +89,7 @@ export default function Registro() {
         label="URL"
         rules={[{ required: true, message: "Por favor, Ingrese una URL!" }]}
       >
-        <Input type="file" onChange={generarURL} />
+        <Input type="file" onChange={generarURL} accept="image/png, .jpeg, .jpg, image/gif" />
       </Form.Item>
 
       <Form.Item>
