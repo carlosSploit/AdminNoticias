@@ -4,13 +4,12 @@ import { Form, Input, Button, message,Layout,Image } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { loggin } from "../../config/plans";
 import { gettoken } from "../../config/mithelworks";
-import Registro from "../Registro/Registro";
-import Reportes from "../Reportes/Reportes";
 
 
 export default function Admin(props) {
 
     const {callback} = props;
+    const [erroclick, geterrorclick] = useState(0)
 
     const onFinish = async (values) => {
         //console.log('Received values of form: ', values);
@@ -24,6 +23,8 @@ export default function Admin(props) {
             message.success("Logeo correcto !");
             callback();
         }else{
+            document.getElementById("logbut").disabled = ((erroclick+1) === 3)? true:false;
+            geterrorclick(erroclick+1)
             message.error("Usuario invalido!");
         }
         
@@ -78,11 +79,21 @@ export default function Admin(props) {
                 />
             </Form.Item>
             <Form.Item>
-                <div style={{display: "flex", alignItems: "center", justifyContent:"center"}}>Preciona para iniciar</div>
+                {
+                    (erroclick != 3)?
+                    <div style={{display: "flex", alignItems: "center", justifyContent:"center"}}>Preciona para iniciar</div>
+                    :
+                    <div style={{display: "flex", alignItems: "center", justifyContent:"center", color:"#f44336"}}>Oportunidades culminadas</div>
+                }
             </Form.Item>
 
             <Form.Item>
-                <Button type="primary" htmlType="submit" className="login-form-button" style={{
+                <Button 
+                id="logbut"
+                type="primary" 
+                htmlType="submit" 
+                className="login-form-button"
+                style={{
                     width: "100%",
                     borderEndEndRadius:"10px",
                     borderEndStartRadius:"10px",
