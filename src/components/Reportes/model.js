@@ -21,14 +21,13 @@ export default function Model(props){
     const [fileimage, setfileimage] = useState(genericimage)
     const [statemodel, setmodel] = useState();
 
-    useEffect(() => {
-        (async () => {
-          let token = await readplains(datos.id);
-          if (genericimage === imageload && token.url.indexOf("cloudinary") !== -1) setImageload(token.url)
-          setdatup(token)
-          //setImageload(token.url)
-        })();
-    }, []);
+
+    const loadplaintdata = async () => {
+        let token = await readplains(datos.id);
+        if (genericimage === imageload && token.url.indexOf("cloudinary") !== -1) setImageload(token.url)
+        setdatup(token)
+        //setImageload(token.url)
+    }
 
     const cancel_update = ()=>{
         form.resetFields();
@@ -79,8 +78,9 @@ export default function Model(props){
 
     return (
         <>
-          <Button type="primary" onClick={() => {
+          <Button type="primary" onClick={ async () => {
               console.log(datup);
+              await loadplaintdata();
               setmodel(true);
           }}>
             Update
