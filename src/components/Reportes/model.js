@@ -24,6 +24,7 @@ export default function Model(props){
 
     const loadplaintdata = async () => {
         let token = await readplains(datos.id);
+        console.log(token)
         if (genericimage === imageload && token.url.indexOf("cloudinary") !== -1) setImageload(token.url)
         setdatup(token)
         //setImageload(token.url)
@@ -71,7 +72,6 @@ export default function Model(props){
     const generarurl = async (evt) =>  {
         // console.log("Pruebas");
         let file = evt.target.files[0];
-        console.log(file);
         setImageload(URL.createObjectURL(file));
         setfileimage(file)
     };
@@ -79,7 +79,6 @@ export default function Model(props){
     return (
         <>
           <Button type="primary" onClick={ async () => {
-              console.log(datup);
               await loadplaintdata();
               setmodel(true);
           }}>
