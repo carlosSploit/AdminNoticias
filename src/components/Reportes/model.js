@@ -27,6 +27,7 @@ export default function Model(props){
         console.log(token)
         if (genericimage === imageload && token.url.indexOf("cloudinary") !== -1) setImageload(token.url)
         setdatup(token)
+        
         //setImageload(token.url)
     }
 
@@ -56,8 +57,8 @@ export default function Model(props){
           url: (url === "")? datup.url : url,
         };
         const token = await updateplains(datup.id_negocio,data);
-        form.resetFields();
-        console.log(token);
+        console.log(token)
+        await loadplaintdata();
         callback();
     };
 
@@ -144,7 +145,7 @@ export default function Model(props){
                     { required: true, message: "Por favor, Ingrese una descripción!" },
                     ]}
                 >
-                    <Input type="text" value={datos.category}></Input>
+                    <Input type="text" value={datup.category}></Input>
                 </Form.Item>
 
                 <Form.Item
