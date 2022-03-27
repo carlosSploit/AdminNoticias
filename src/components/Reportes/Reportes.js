@@ -10,7 +10,11 @@ import { PoweroffOutlined } from "@ant-design/icons";
 export default function Registro() {
   const [historydata, sethistorydata] = useState([]);
   const [data, setData] = useState([]);
-  const [fechaApertura, setFechaApertura] = useState({});
+  const [fechaApertura, setFechaApertura] = useState({
+    dia: "00",
+    anno: "0000",
+    mes: "00"
+  });
 
   useEffect(() => {
     (actualizarTabla)();
