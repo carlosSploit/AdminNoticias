@@ -1,13 +1,22 @@
-import React, { useState } from "react";
-import { Form, Input, message, Button, Space } from "antd";
+import React, { useState,useEffect} from "react";
+import { Form, Input, message, Button, Space,Select } from "antd";
 // import { uploadFile } from "../../service/uploadFile";
 import { addplains } from "../../config/plans";
 import {uploudImage} from "../../config/uploud_img"
+import { getListcategori} from "../../config/categori";
 
 export default function Registro() {
   const [form] = Form.useForm();
   //const [urlimageload, seturlimageload] = useState(); // url de la pagina 
   const [fieimage, setfieimage] = useState();
+  const [listCategori,setlistCategori] = useState([{id:1,nombre: "Default"}]);
+
+  useEffect(() => {
+    (async () => {
+      const response4 = await getListcategori();
+      setlistCategori(response4);
+    })();
+  }, []);
 
   const onFinish = async (evt) => {
     message.success("Registro Exitoso!");
@@ -26,6 +35,7 @@ export default function Registro() {
       nombre: evt.nameLocal,
       descripccion: evt.description,
       url: urlname,
+      id_cat: evt.id_categ
     };
 
     const token = await addplains(data);
@@ -82,6 +92,20 @@ export default function Registro() {
         ]}
       >
         <Input type="text"></Input>
+      </Form.Item>
+
+      <Form.Item
+        name="id_categ"
+        label="Categoria"
+        rules={[
+          { required: true, message: "Por favor, Ingrese una Categoria!" },
+        ]}
+      >
+        <Select>
+          {listCategori.map(item =>{
+            return (<Select.Option value={`${item.id}`}>{item.nombre}</Select.Option>);
+          })}
+        </Select>
       </Form.Item>
 
       <Form.Item

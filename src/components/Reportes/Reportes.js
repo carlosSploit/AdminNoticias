@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { Form, message, Typography, Table, Button, Space, Row, Col } from "antd";
+import React, { useState, useEffect} from "react";
+import { Form, message, Typography, Table, Button, Space, Row, Col,Select } from "antd";
 import { getaperturtime, getpointsanalitic, getaperturevotacion } from "../../config/votacions";
 import { deleteplains } from "../../config/plans";
 import ModelButton from "./model"
-import Bottonreload from "./recarga" 
-import { PoweroffOutlined } from "@ant-design/icons";
+import Bottonreload from "./recarga"
+import { getlistapeture} from "../../config/votacions";
+import { getListcategori } from "../../config/categori";
 
 
 export default function Registro() {
-  const [historydata, sethistorydata] = useState([]);
+  const [categoristad, setcategoristad] = useState({id:1,nombre: "Anonimato"});
   const [data, setData] = useState([]);
-  const [fechaApertura, setFechaApertura] = useState({
-    dia: "00",
-    anno: "0000",
-    mes: "00"
-  });
+  const [datafilter, setDatafilter] = useState([]);
+  const [aperture, setaperture] = useState({id_votaciones:1, fecha: "2022-03-17 22:41:31"})
+  const [listvotacion, setlistvotacion] = useState([{id_votaciones:1, fecha:"2022-03-17T22:41:31.000Z"}]);
+  const [fechaApertura, setFechaApertura] = useState({dia: "00",anno: "0000",mes: "00"});
+  const [listCategori,setlistCategori] = useState([{id:1,nombre: "Default"}]);
 
   useEffect(() => {
+    (list_aperute)();
+    (list_categori)();
     (actualizarTabla)();
-  }, []);
-
-  useEffect(() => {
     (actualizartime)();
   }, []);
 
@@ -28,8 +28,13 @@ export default function Registro() {
 
   const { Title } = Typography;
 
-  const actualizarTabla = async () => {
-      const token = await getpointsanalitic();
+  const list_categori = async () =>{
+    const response4 = await getListcategori();
+    setlistCategori(response4);
+  }
+
+  const actualizarTabla = async (id=0) => {
+      const token = await getpointsanalitic(id);
       const data2 = token.map((item) => {
         return {
           key: item.id_negocio,
@@ -38,9 +43,42 @@ export default function Registro() {
           category: item.descripccion,
           score: item.puntaje,
           porcent: item.promedio,
+          id_categor: item.id_categor
         };
       });
       setData(data2);
+      setDatafilter(data2);
+  }
+
+  function format_date_mysql(fechaactual) {
+    return `${fechaactual.substring(0, 4)}-${fechaactual.substring(
+      4,
+      6
+    )}-${fechaactual.substring(6, 8)} ${fechaactual.substring(
+      8,
+      10
+    )}:${fechaactual.substring(10, 12)}:00`;
+  }
+
+  const extract_fecha = (time) => {
+    let fecha = format_date_mysql(time);
+    return `${fecha}`;
+  }
+  
+  const list_aperute = async () => {
+    const token = await getlistapeture();
+    let data2 = token.map((item) => {
+      
+      return {
+        fecha: extract_fecha(item.fecha.toString()) ,
+        id: item.id_votaciones
+      };
+    });
+    data2.reverse();
+    if (token.length !== 0){
+        setlistvotacion(data2);
+        // setaperture(initvalue);
+    }
   }
 
   const actualizartime = async () => {
@@ -124,11 +162,11 @@ export default function Registro() {
   }
 
   const openMessage = async () => {
-    console.log(data[0]);
+    console.log(datafilter[0]);
     message.loading({ content: "Cargando...", key, duration: 2 });
     setTimeout(() => {
       message.success({
-        content: `Empresa GANADORA ${data[0].name}`,
+        content: `Empresa GANADORA ${datafilter[0].name}`,
         key,
         duration: 17,
       });
@@ -136,6 +174,10 @@ export default function Registro() {
   };
 
   //console.log(fechaApertura);
+  const restablecer_convo = () => {
+    setcategoristad({id:1,nombre: "Anonimato"});
+    setaperture({id_votaciones:1, fecha: "2022-03-17 22:41:31"});
+  }
 
   return (
     <Form>
@@ -145,13 +187,87 @@ export default function Registro() {
               <Title level={2}> Reportes de votaciones </Title>
           </Col>
           <Col>
+            {/* Aperturar una nueva votacion */}
             <Bottonreload click = { async ()=>{
-                return await getaperturevotacion()
+                return await getaperturevotacion();
             }} callback = {actualizartime}/>
           </Col>
         </Row>
+        <Row justify="space-between">
+          <Col>
+            <Row>
+              <Select 
+                onChange={(value)=>{
+                    let dato = listvotacion.filter((item) =>{
+                        return item.id.toString() === value.toString();
+                    });
+                    let datos = (Array.isArray(dato))?dato[0]:dato;
+                    setaperture(datos);
+                }}
+                defaultValue={(aperture.fecha === "2022-03-17 22:41:31")?"Selec Time":aperture.fecha}
+                style={{width:"200px"}}
+              >
+                {listvotacion.map(item =>{
+                    return (<Select.Option value={`${item.id}`}>{item.fecha}</Select.Option>);
+                })}
+              </Select>
+              <div style={{width: "10px"}}/>
+              <Select 
+                onChange={(value)=>{
+                    let dato = listCategori.filter((item) =>{
+                        return item.id.toString() === value.toString();
+                    });
+                    let datos = (Array.isArray(dato))?dato[0]:dato;
+                    setcategoristad(datos);
+                }}
+                defaultValue={(categoristad.nombre === "Anonimato")?"Selec Categori":categoristad.nombre}
+                style={{width:"200px"}}
+              >
+                {listCategori.map(item =>{
+                    return (<Select.Option value={`${item.id}`}>{item.nombre}</Select.Option>);
+                })}
+              </Select>
+            </Row>
+          </Col>
+          <Col>
+            {/* Botton de busqueda por filtrar */}
+            <Row>
+              <Bottonreload 
+              label = "Filtrar"
+              click = { async ()=>{
+                if(aperture.fecha === "2022-03-17 22:41:31" && categoristad.nombre === "Anonimato") {
+                  message.error("Seleccioa algunos de los filtros porfavor!");
+                  return;
+                }
+                // en caso que se aya seleccionado otro filtro, se comprueba si el id de apertura
+                // tiene un id de seleccion o un id de default, si esta en defaul hace la busqueda general
+                // pero si se selecciono, hace una peticion desde la id seleccionada
+                console.log((aperture.fecha === "2022-03-17 22:41:31")?0:aperture.hasOwnProperty("id_votaciones")? aperture.id_votaciones: aperture.id)
+                await actualizarTabla((aperture.fecha === "2022-03-17 22:41:31")?0:aperture.hasOwnProperty("id_votaciones")? aperture.id_votaciones: aperture.id);
+                // si se logro filtrar por categoria, se da el filtro respectivo
+                if (categoristad.nombre !== "Anonimato"){
+                  let newdate = data.filter((item) => {
+                      console.log(item);
+                      return item.id_categor === categoristad.id;
+                  });
+                  setDatafilter(newdate);
+                }
+              }} callback = {()=>{
+              }}/>
+              <div style={{width:"10px"}}/>
+              <Bottonreload 
+                label = "Restablecer"
+                click = { async ()=>{
+                  await setDatafilter(data);
+                  await restablecer_convo();
+                }} callback = {()=>{}}
+              />
+            </Row>
+          </Col>
+        </Row>
+        <div style={{height:"20px"}}/>
         <Form.Item>
-          <Table dataSource={data} columns={columns} onChange={onChange} />
+          <Table dataSource={datafilter} columns={columns} onChange={onChange} />
           <Button onClick={openMessage}>
             {" "}
             Ganador de las votaciones a la fecha: {fechaApertura.dia}/

@@ -5,6 +5,7 @@ import { BarChartOutlined, PlusOutlined } from "@ant-design/icons";
 
 import Registro from "../Registro/Registro";
 import Reportes from "../Reportes/Reportes";
+import LCategori from "../Categoria/Categori";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
@@ -22,7 +23,7 @@ const clickcambio = (index) => {
   setindexInterface(index)
 }
 
-const listpanel = [<Registro />, <Reportes />]
+const listpanel = [<Registro />, <Reportes />, <LCategori />]
 
 return (
   <Router>
@@ -38,6 +39,10 @@ return (
           <Menu.Item key="2" icon={<BarChartOutlined />} onClick={()=>{clickcambio(1)}}>
             {/* <Link to="/report" /> */}
             Ver Votaciones
+          </Menu.Item>
+          <Menu.Item key="3" icon={<BarChartOutlined />} onClick={()=>{clickcambio(2)}}>
+            {/* <Link to="/report" /> */}
+            Ver Categorias
           </Menu.Item>
         </Menu>
       </Sider>

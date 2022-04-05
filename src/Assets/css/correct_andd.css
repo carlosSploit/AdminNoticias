@@ -3,6 +3,11 @@
   border-radius: 50%;
 }
 
+.ant-modal-content{
+  overflow: hidden;
+  border-radius: 20px;
+}
+
 .ant-modal-header {
   background: #002140;
 }
