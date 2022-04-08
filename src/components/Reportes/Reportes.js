@@ -3,9 +3,7 @@ import {
   Form,
   message,
   Typography,
-  Table,
   Button,
-  Space,
   Row,
   Col,
   Select,
@@ -16,10 +14,12 @@ import {
   getaperturevotacion,
 } from "../../config/votacions";
 import { deleteplains } from "../../config/plans";
-import ModelButton from "./model";
+import ModelButton from "./model2";
 import Bottonreload from "./recarga";
 import { getlistapeture } from "../../config/votacions";
 import { getListcategori } from "../../config/categori";
+import "bootstrap/dist/js/bootstrap";
+import Cargando from "../pagesalert/cargando/cargando"
 
 export default function Registro() {
   const [categoristad, setcategoristad] = useState({
@@ -125,66 +125,77 @@ export default function Registro() {
     setFechaApertura(data);
   };
 
-  const columns = [
-    { title: "id", dataIndex: "id_negocio", key: "id_negocio" },
+  const columnhead = ["id","Nombre","Descripción","puntaje","promedio","Acciones"];
+
+  // const columns = [
+  //   { title: "id", dataIndex: "id_negocio", key: "id_negocio" },
+  //   {
+  //     title: "Nombre",
+  //     dataIndex: "nombre",
+  //     key: "nombre",
+  //   },
+  //   {
+  //     title: "Descripción",
+  //     dataIndex: "descripccion",
+  //     key: "descripccion",
+  //   },
+  //   {
+  //     title: "Puntaje",
+  //     dataIndex: "puntaje",
+  //     key: "puntaje",
+  //     sorter: {
+  //       compare: (a, b) => a.score - b.score,
+  //       multiple: 1,
+  //     },
+  //     render: (text) => <a>{text}</a>,
+  //   },
+  //   {
+  //     title: "Porcentaje",
+  //     dataIndex: "promedio",
+  //     key: "promedio",
+  //     sorter: {
+  //       compare: (a, b) => a.score - b.score,
+  //       multiple: 1,
+  //     },
+  //   },
+  //   {
+  //     title: "Acciones",
+  //     dataIndex: "action",
+  //     key: "action",
+  //     render: (text, record) => (
+  //       <Space size="middle">
+  //         <ModelButton datos={record} callback={actualizarTabla}></ModelButton>
+  //         <Button
+  //           onClick={() => {
+  //             eliminarLugar(record);
+  //           }}
+  //         >
+  //           Eliminar
+  //         </Button>
+  //       </Space>
+  //     ),
+  //   },
+  // ];
+
+  const Actions = [
     {
-      title: "Nombre",
-      dataIndex: "nombre",
-      key: "nombre",
-    },
-    {
-      title: "Descripción",
-      dataIndex: "descripccion",
-      key: "descripccion",
-    },
-    {
-      title: "Puntaje",
-      dataIndex: "puntaje",
-      key: "puntaje",
-      sorter: {
-        compare: (a, b) => a.score - b.score,
-        multiple: 1,
-      },
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: "Porcentaje",
-      dataIndex: "promedio",
-      key: "promedio",
-      sorter: {
-        compare: (a, b) => a.score - b.score,
-        multiple: 1,
-      },
-    },
-    {
-      title: "Acciones",
-      dataIndex: "action",
-      key: "action",
-      render: (text, record) => (
-        <Space size="middle">
-          <ModelButton datos={record} callback={actualizarTabla}></ModelButton>
-          <Button
-            onClick={() => {
-              eliminarLugar(record);
-            }}
-          >
-            Eliminar
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+      name: "Eliminar",
+      onchange: async (item)=>{
+        await eliminarLugar(item.id_negocio);
+      }
+    }
+  ]
 
   async function eliminarLugar(id) {
     //console.log(id);
-    const token = await deleteplains(id.id);
+    const token = await deleteplains(id);
     await actualizarTabla();
     console.log(token);
   }
 
-  function onChange(pagination, filters, sorter, extra) {
-    console.log("params", pagination, filters, sorter, extra);
-  }
+  // function onChange(pagination, filters, sorter, extra) {
+  //   console.log("params", pagination, filters, sorter, extra);
+  // }
 
   const openMessage = async () => {
     console.log(datafilter[0]);
@@ -329,10 +340,18 @@ export default function Registro() {
         </Row>
         <div style={{ height: "20px" }} />
         <Form.Item>
-          <Table
+          {/* table - 1 */}
+          {/* <Table
             dataSource={datafilter}
             columns={columns}
             onChange={onChange}
+          /> */}
+          {/* table - 1 */}
+          <Tableboostrap
+            heads = {columnhead}
+            items = {datafilter}
+            actions = {Actions}
+            callbackaction = {actualizarTabla}
           />
           <Button onClick={openMessage}>
             {" "}
@@ -342,5 +361,73 @@ export default function Registro() {
         </Form.Item>
       </Form.Item>
     </Form>
+  );
+}
+
+const Tableboostrap = (props) =>{
+
+  const {heads,items, actions, callbackaction} = props;
+  const [listfilteritem , setlistfilteritems] = useState([]);
+
+  // useEffect((()=>{
+  //     setlistfilteritems(items);
+  // }),[listfilteritem]);
+
+  return (
+    <div class="table-responsive-md">
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            {
+              heads.map(item =>{
+                return (<th scope="col">{item}</th>);
+              })
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {
+            (items.length === 0)?<Cargando/>:items.map(item => {
+              return (
+               <tr style={{
+                 background: "white"
+               }}>
+                 <th scope="row">{item.id_negocio}</th>
+                 <td>{item.nombre}</td>
+                 <td>{item.descripccion}</td>
+                 <td>{item.puntaje}</td>
+                 <td>{item.promedio}</td>
+                 <td>
+                   <div class="dropdown">
+                     <div class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                     </div>
+ 
+                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                       {/* votones de accion no dependientes al padre */}
+                       {
+                         actions.map(itema=>{
+                           return (<li>
+                             <div
+                               onClick={()=>{
+                                 itema.onchange(item);
+                               }}
+                               class="dropdown-item"
+                               >{itema.name}</div>
+                           </li>)
+                         })
+                       }
+                       {/* modal de ejecucion de la actualizacion */}
+                       <ModelButton datos={item} callback={callbackaction}></ModelButton>
+                     </ul>
+                   </div>
+                 </td>
+               </tr>
+              );
+             })
+          }
+        </tbody>
+      </table>
+    </div>
+    
   );
 }
