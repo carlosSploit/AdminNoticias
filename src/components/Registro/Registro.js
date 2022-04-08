@@ -1,15 +1,18 @@
-import React, { useState,useEffect} from "react";
-import { Form, Input, message, Button, Space,Select } from "antd";
+import React, { useState, useEffect } from "react";
+import { Form, Input, message, Button, Space, Select } from "antd";
 // import { uploadFile } from "../../service/uploadFile";
 import { addplains } from "../../config/plans";
-import {uploudImage} from "../../config/uploud_img"
-import { getListcategori} from "../../config/categori";
+import { uploudImage } from "../../config/uploud_img";
+import { getListcategori } from "../../config/categori";
 
 export default function Registro() {
   const [form] = Form.useForm();
-  //const [urlimageload, seturlimageload] = useState(); // url de la pagina 
+  //const [urlimageload, seturlimageload] = useState(); // url de la pagina
   const [fieimage, setfieimage] = useState();
-  const [listCategori,setlistCategori] = useState([{id:1,nombre: "Default"}]);
+  const [listCategori, setlistCategori] = useState([
+    { id: 1, nombre: "Default" },
+  ]);
+  const [category, setCategory] = useState({ id: 1, nombre: "Default" });
 
   useEffect(() => {
     (async () => {
@@ -21,27 +24,27 @@ export default function Registro() {
   const onFinish = async (evt) => {
     message.success("Registro Exitoso!");
     //console.log(evt);
-    console.log(fieimage)
-    if (!(fieimage["name"] !== undefined)){
-      console.log("no presenta una imagen")
-      return ;
+    console.log(fieimage);
+    if (!(fieimage["name"] !== undefined)) {
+      console.log("no presenta una imagen");
+      return;
     }
 
     const contador = await uploudImage(fieimage);
     let urlname = contador.data[0].url;
-    console.log(`url image : ${urlname}`)
-    
+    console.log(`url image : ${urlname}`);
+
     const data = {
       nombre: evt.nameLocal,
       descripccion: evt.description,
       url: urlname,
-      id_cat: evt.id_categ
+      id_cat: evt.id_categ,
     };
 
     const token = await addplains(data);
     form.resetFields();
+    setCategory(listCategori[0]);
     console.log(token);
-    
   };
 
   const onFinishFailed = () => {
@@ -63,8 +66,8 @@ export default function Registro() {
     // const contador = await uploudImage(file);
     // const url = contador.data[0].url;
     //seturlimageload(URL.createObjectURL(file))
-    setfieimage(file)
-    console.log(file)
+    setfieimage(file);
+    console.log(file);
     // uploadFile(file);
   };
 
@@ -100,10 +103,20 @@ export default function Registro() {
         rules={[
           { required: true, message: "Por favor, Ingrese una Categoria!" },
         ]}
+        initialValue={category.nombre}
+        onChange={(value) => {
+          let dato = listCategori.filter((item) => {
+            return item.id.toString() === value.toString();
+          });
+          let datos = Array.isArray(dato) ? dato[0] : dato;
+          setCategory(datos);
+        }}
       >
         <Select>
-          {listCategori.map(item =>{
-            return (<Select.Option value={`${item.id}`}>{item.nombre}</Select.Option>);
+          {listCategori.map((item) => {
+            return (
+              <Select.Option value={`${item.id}`}>{item.nombre}</Select.Option>
+            );
           })}
         </Select>
       </Form.Item>
@@ -113,7 +126,11 @@ export default function Registro() {
         label="URL"
         rules={[{ required: true, message: "Por favor, Ingrese una URL!" }]}
       >
-        <Input type="file" onChange={generarURL} accept="image/png, .jpeg, .jpg, image/gif" />
+        <Input
+          type="file"
+          onChange={generarURL}
+          accept="image/png, .jpeg, .jpg, image/gif"
+        />
       </Form.Item>
 
       <Form.Item>
